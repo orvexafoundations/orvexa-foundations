@@ -1,4 +1,452 @@
 <!DOCTYPE html>
 <html lang="id">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Orvexa Press - Kirim Tulisan</title><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Inter',sans-serif;background:#F5F5F0;color:#0A0A0A;}:root{--black:#0A0A0A;--navy:#1A1A2E;--gold:#C8A96E;--cream:#F5F5F0;--gray:#6B6B6B;--border:#D4D4CC;--white:#FFFFFF;}.container{max-width:900px;margin:40px auto;background:white;padding:40px;box-shadow:0 0 20px rgba(0,0,0,0.05);}.form-group{margin-bottom:20px;}label{font-size:12px;font-weight:700;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--gray);}input,select,textarea{width:100%;padding:12px;border:1px solid var(--border);font-family:'Inter';background:var(--cream);}button{background:var(--navy);color:var(--gold);border:none;padding:12px 28px;font-weight:700;cursor:pointer;transition:0.2s;}button:hover{background:var(--gold);color:var(--navy);}.image-preview{margin-top:10px;max-width:300px;display:none;}.image-preview img{width:100%;}.toast{position:fixed;bottom:20px;right:20px;background:#1A1A2E;color:white;padding:12px 20px;border-left:4px solid var(--gold);display:none;z-index:1000;font-size:14px;}.loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;display:none;}.spinner{width:50px;height:50px;border:5px solid #ddd;border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}@keyframes spin{to{transform:rotate(360deg);}}</style></head>
-<body><div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div><div class="container"><h1 style="font-family:'Playfair Display';margin-bottom:20px;">Kirim Naskah ke Redaksi</h1><p style="margin-bottom:30px;color:gray">Tulisan Anda akan melewati proses kurasi oleh admin. Pastikan orisinal dan faktual.</p><form id="submitForm"><div class="form-group"><label>Judul</label><input type="text" id="title" required></div><div class="form-group"><label>Kategori</label><select id="category"><option>Ekonomi</option><option>Politik</option><option>Sejarah</option><option>Artikel</option><option>Essai</option><option>Opini</option><option>hukum</option><option>olahraga</option><option>internasional</option></select></div><div class="form-group"><label>Penulis (Nama Lengkap)</label><input type="text" id="author" placeholder="Nama asli atau pseudonim"></div><div class="form-group"><label>Ringkasan (Excerpt)</label><textarea id="excerpt" rows="3"></textarea></div><div class="form-group"><label>Isi Artikel</label><textarea id="content" rows="10" required></textarea></div><div class="form-group"><label>Upload Gambar (opsional)</label><input type="file" id="imageFile" accept="image/*"><div class="image-preview" id="previewBox"><img id="previewImg"><p style="font-size:11px">Preview</p></div></div><button type="submit">Kirim ke Redaksi</button></form></div><div id="toast" class="toast"></div><script>const SUPABASE_URL='https://eflqmksprpcjcxgtsgjt.supabase.co',SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmbHFta3NwcnBjamN4Z3RzZ2p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMTc1OTAsImV4cCI6MjA5NjU5MzU5MH0.TCqOzZPknF8KsTahB6rfph8_J2cZAGUNi3AHeLX2xFw',sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);function showToast(msg,isError=false){const t=document.getElementById('toast');t.textContent=msg;t.style.backgroundColor=isError?'#B91C1C':'#1A1A2E';t.style.borderLeftColor=isError?'#FFD700':'#C8A96E';t.style.display='block';setTimeout(()=>t.style.display='none',5000);}function showLoading(show){document.getElementById('loadingOverlay').style.display=show?'flex':'none';}document.getElementById('imageFile').addEventListener('change',function(e){const file=e.target.files[0];if(file){const reader=new FileReader();reader.onload=function(ev){document.getElementById('previewImg').src=ev.target.result;document.getElementById('previewBox').style.display='block';};reader.readAsDataURL(file);}});document.getElementById('submitForm').addEventListener('submit',async(e)=>{e.preventDefault();showLoading(true);const title=document.getElementById('title').value.trim(),cat=document.getElementById('category').value,author=document.getElementById('author').value.trim()||'Anonim',excerpt=document.getElementById('excerpt').value.trim(),content=document.getElementById('content').value.trim();if(!title||!content){showToast('Judul dan konten wajib diisi',true);showLoading(false);return;}let imageUrl=null;const file=document.getElementById('imageFile').files[0];if(file){if(file.size>5*1024*1024){showToast('Ukuran gambar maksimal 5MB',true);showLoading(false);return;}const ext=file.name.split('.').pop().toLowerCase();if(!['jpg','jpeg','png','webp','gif'].includes(ext)){showToast('Format gambar tidak didukung (JPG, PNG, WEBP, GIF)',true);showLoading(false);return;}const fileName=`submissions/${Date.now()}_${Math.random().toString(36).substring(2,10)}.${ext}`;try{const{data:uploadData,error:uploadError}=await sb.storage.from('media').upload(fileName,file);if(uploadError){console.error('Upload error:',uploadError);showToast('Gagal upload gambar: '+uploadError.message,true);showLoading(false);return;}const{data:urlData}=sb.storage.from('media').getPublicUrl(fileName);imageUrl=urlData.publicUrl;}catch(err){console.error(err);showToast('Error upload: '+err.message,true);showLoading(false);return;}}const newArticle={title:title,category:cat,author:author,excerpt:excerpt,content:content,image_url:imageUrl,published:false,rejected:false,created_at:new Date().toISOString()};try{const{data,error:insertError}=await sb.from('articles').insert(newArticle).select();if(insertError){console.error('Insert error:',insertError);showToast('Gagal menyimpan artikel: '+insertError.message,true);showLoading(false);return;}showToast('Naskah terkirim! Terima kasih, naskah akan dikurasi admin.',false);document.getElementById('submitForm').reset();document.getElementById('previewBox').style.display='none';}catch(err){console.error(err);showToast('Terjadi kesalahan: '+err.message,true);}finally{showLoading(false);}});</script></body></html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orvexa Press - Kirim Tulisan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family:'Inter', sans-serif;
+      background: #F5F5F0;
+      color: #0A0A0A;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(#D4D4CC 1px, transparent 1px);
+      background-size: 30px 30px;
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 0;
+    }
+    :root {
+      --black:#0A0A0A; --navy:#1A1A2E; --gold:#C8A96E; --cream:#F5F5F0;
+      --gray:#6B6B6B; --border:#D4D4CC; --white:#FFFFFF; --red:#B91C1C;
+    }
+    /* Premium Ticker */
+    .premium-ticker { position:relative; background:linear-gradient(135deg,#D32F2F 0%,#B71C1C 50%,#8B0000 100%); overflow:hidden; box-shadow:inset 0 1px 3px rgba(255,255,255,0.3),0 2px 5px rgba(0,0,0,0.2); border-bottom:1px solid rgba(255,215,0,0.3); }
+    .ticker-glow { position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent); animation:shine 4s infinite; pointer-events:none; }
+    @keyframes shine { 0% { left:-100%; } 20% { left:100%; } 100% { left:100%; } }
+    .ticker-container { overflow:hidden; white-space:nowrap; padding:10px 0; }
+    .ticker-track { display:inline-block; animation:scrollEstetik 28s linear infinite; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; letter-spacing:0.3px; }
+    .ticker-item { display:inline-block; color:#FFF9E0; text-shadow:0 1px 2px rgba(0,0,0,0.3); margin:0 8px; }
+    .ticker-sep { display:inline-block; color:#FFD966; font-size:14px; margin:0 4px; }
+    @keyframes scrollEstetik { 0% { transform:translateX(0); } 100% { transform:translateX(-50%); } }
+    .premium-ticker:hover .ticker-track { animation-play-state:paused; }
+    /* Header */
+    header { background:var(--white); border-bottom:3px solid var(--gold); position:relative; z-index:2; }
+    .header-top { display:flex; justify-content:space-between; align-items:center; padding:20px 60px; flex-wrap:wrap; gap:15px; }
+    .logo h1 { font-family:'Playfair Display',serif; font-size:40px; font-weight:900; color:var(--navy); }
+    .logo h1 span { color:var(--gold); }
+    .logo p { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gray); margin-top:4px; }
+    .btn-submit { background:var(--navy); color:var(--gold); padding:8px 20px; text-decoration:none; font-weight:600; font-size:13px; border-radius:0; transition:0.2s; display:inline-block; }
+    .btn-submit:hover { background:var(--gold); color:var(--navy); }
+    nav { background:var(--navy); padding:0 60px; position:relative; z-index:2; }
+    nav ul { display:flex; list-style:none; gap:0; flex-wrap:wrap; }
+    nav ul li a { display:block; padding:14px 20px; color:var(--cream); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:1px; text-decoration:none; border-bottom:3px solid transparent; transition:0.2s; }
+    nav ul li a:hover, nav ul li a.active { border-bottom-color:var(--gold); color:var(--gold); }
+    /* Container Form */
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: var(--white);
+      padding: 40px 50px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      position: relative;
+      z-index: 1;
+      border: 1px solid var(--border);
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      color: var(--navy);
+      margin-bottom: 10px;
+      position: relative;
+      display: inline-block;
+    }
+    h1:after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: var(--gold);
+    }
+    .sub {
+      margin-bottom: 35px;
+      color: var(--gray);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-top: 20px;
+    }
+    .form-group {
+      margin-bottom: 24px;
+      position: relative;
+    }
+    label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gray);
+      letter-spacing: 0.5px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      background: var(--cream);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--black);
+      transition: all 0.25s;
+      border-radius: 8px;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(200, 169, 110, 0.2);
+      background: var(--white);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    .image-upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.2s;
+      cursor: pointer;
+      background: var(--cream);
+    }
+    .image-upload-area:hover {
+      border-color: var(--gold);
+      background: #FAFAF0;
+    }
+    .image-upload-area input {
+      display: none;
+    }
+    .upload-label {
+      display: inline-block;
+      background: var(--navy);
+      color: var(--gold);
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .upload-label:hover {
+      background: var(--gold);
+      color: var(--navy);
+    }
+    .image-preview {
+      margin-top: 15px;
+      max-width: 280px;
+      display: none;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .image-preview img {
+      width: 100%;
+      display: block;
+    }
+    .remove-img {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      width: 26px;
+      height: 26px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+    .remove-img:hover {
+      background: var(--red);
+    }
+    button[type="submit"] {
+      background: var(--navy);
+      color: var(--gold);
+      border: none;
+      padding: 14px 32px;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+      width: 100%;
+    }
+    button[type="submit"]:hover {
+      background: var(--gold);
+      color: var(--navy);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+    }
+    /* Footer */
+    footer { background:var(--navy); color:var(--cream); padding:40px 60px 20px; margin-top:60px; position:relative; z-index:2; }
+    .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr; gap:40px; }
+    .footer-brand h3 { font-family:'Playfair Display',serif; font-size:24px; color:var(--gold); }
+    .footer-brand p { font-size:13px; opacity:0.7; margin-top:10px; }
+    .footer-col a { display:block; color:var(--cream); text-decoration:none; font-size:13px; margin-bottom:8px; opacity:0.7; transition:0.2s; }
+    .footer-col a:hover { opacity:1; color:var(--gold); }
+    .copyright { text-align:center; margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); font-size:12px; opacity:0.5; }
+    /* Toast & Overlay */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--navy);
+      color: white;
+      padding: 14px 24px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 500;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      align-items: center;
+      gap: 10px;
+    }
+    .toast.success { background: #15803D; border-left: 4px solid var(--gold); }
+    .toast.error { background: var(--red); border-left: 4px solid #FFD966; }
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10,10,10,0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      display: none;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 900px) {
+      .header-top { padding:15px 20px; }
+      nav { padding:0 20px; }
+      .container { padding: 25px; margin: 20px; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="premium-ticker"><div class="ticker-glow"></div><div class="ticker-container"><div class="ticker-track"><span class="ticker-item">🔴 ORVEXA.Press</span><span class="ticker-sep">✦</span><span class="ticker-item">Media Independen & Terpercaya</span><span class="ticker-sep">✦</span><span class="ticker-item">Jurnalisme Berdampak</span><span class="ticker-sep">✦</span><span class="ticker-item">✍️ Kirim Tulisan</span><span class="ticker-sep">✦</span><span class="ticker-item">📧 redaksi@orvexapress.id</span><span class="ticker-sep">✦</span><span class="ticker-item">🔴 ORVEXA.Press</span><span class="ticker-sep">✦</span><span class="ticker-item">Media Independen & Terpercaya</span><span class="ticker-sep">✦</span><span class="ticker-item">Jurnalisme Berdampak</span><span class="ticker-sep">✦</span><span class="ticker-item">✍️ Kirim Tulisan</span><span class="ticker-sep">✦</span><span class="ticker-item">📧 redaksi@orvexapress.id</span></div></div></div>
+<header>
+  <div class="header-top">
+    <div class="logo"><h1>ORVEXA<span>.</span>Press</h1><p>Jurnalisme Berdampak</p></div>
+    <a href="kirim.html" class="btn-submit">✍️ Kirim Tulisan</a>
+  </div>
+  <nav><ul>
+    <li><a href="index.html">Beranda</a></li>
+    <li><a href="ekonomi.html">Ekonomi</a></li><li><a href="politik.html">Politik</a></li>
+    <li><a href="hukum.html">Hukum</a></li><li><a href="internasional.html">Internasional</a></li>
+    <li><a href="olahraga.html">Olahraga</a></li><li><a href="sejarah.html">Sejarah</a></li>
+    <li><a href="artikel.html">Artikel</a></li><li><a href="essai.html">Essai</a></li>
+    <li><a href="opini.html">Opini</a></li><li><a href="profil.html">Profil</a></li>
+  </ul></nav>
+</header>
+<div class="container">
+  <h1>Kirim Naskah</h1>
+  <div class="sub">Tulisan Anda akan melewati proses kurasi oleh tim redaksi. Pastikan orisinal, faktual, dan tidak mengandung SARA.</div>
+  <form id="submitForm">
+    <div class="form-group">
+      <label>Judul</label>
+      <input type="text" id="title" placeholder="Contoh: Analisis Dampak Inflasi 2025" required>
+    </div>
+    <div class="form-group">
+      <label>Kategori</label>
+      <select id="category">
+        <option value="Ekonomi">Ekonomi</option>
+        <option value="Politik">Politik</option>
+        <option value="Hukum">Hukum</option>
+        <option value="Internasional">Internasional</option>
+        <option value="Olahraga">Olahraga</option>
+        <option value="Sejarah">Sejarah</option>
+        <option value="Artikel">Artikel</option>
+        <option value="Essai">Essai</option>
+        <option value="Opini">Opini</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Penulis (Nama Lengkap)</label>
+      <input type="text" id="author" placeholder="Nama asli atau pseudonim">
+    </div>
+    <div class="form-group">
+      <label>Ringkasan (Excerpt)</label>
+      <textarea id="excerpt" rows="3" placeholder="Tulis ringkasan singkat artikel..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Isi Artikel</label>
+      <textarea id="content" rows="10" required placeholder="Tulis isi artikel di sini. Tekan Enter untuk paragraf baru."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Gambar Pendukung</label>
+      <div class="image-upload-area" id="uploadArea">
+        <input type="file" id="imageFile" accept="image/*">
+        <label for="imageFile" class="upload-label">📷 Pilih Gambar</label>
+        <p style="font-size:12px; margin-top:10px; color:#aaa">JPG, PNG, WEBP (Maks 5MB)</p>
+      </div>
+      <div class="image-preview" id="previewBox">
+        <img id="previewImg" src="">
+        <button type="button" class="remove-img" id="removeImgBtn">✕</button>
+      </div>
+    </div>
+    <button type="submit">Kirim ke Redaksi</button>
+  </form>
+</div>
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand"><h3>ORVEXA.Press</h3><p>Bagian dari Orvexa Foundations — menghadirkan jurnalisme independen yang mengedepankan fakta, analisis mendalam, dan keberagaman perspektif untuk masyarakat yang lebih cerdas.</p></div>
+    <div class="footer-col"><h4>Eksplorasi</h4><a href="ekonomi.html">Ekonomi</a><a href="politik.html">Politik</a><a href="hukum.html">Hukum</a><a href="internasional.html">Internasional</a><a href="olahraga.html">Olahraga</a><a href="sejarah.html">Sejarah</a><a href="artikel.html">Artikel</a><a href="essai.html">Essai</a><a href="opini.html">Opini</a></div>
+    <div class="footer-col"><h4>Lainnya</h4><a href="kirim.html">Kirim Tulisan</a><a href="privacy.html">Kebijakan Privasi</a><a href="profil.html">Profil Kami</a><a href="admin.html">Admin Panel</a></div>
+  </div>
+  <div class="copyright">© 2025 Orvexa Press - Media Independen dari Orvexa Foundations. Hak cipta dilindungi.</div>
+</footer>
+<div class="toast" id="toast"></div>
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+
+<script>
+  const SUPABASE_URL = 'https://eflqmksprpcjcxgtsgjt.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmbHFta3NwcnBjamN4Z3RzZ2p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMTc1OTAsImV4cCI6MjA5NjU5MzU5MH0.TCqOzZPknF8KsTahB6rfph8_J2cZAGUNi3AHeLX2xFw';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = `toast ${isError ? 'error' : 'success'}`;
+    toast.style.display = 'flex';
+    setTimeout(() => toast.style.display = 'none', 5000);
+  }
+
+  function showLoading(show) {
+    document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+  }
+
+  // Preview Gambar
+  const imageFileInput = document.getElementById('imageFile');
+  const previewBox = document.getElementById('previewBox');
+  const previewImg = document.getElementById('previewImg');
+  const removeImgBtn = document.getElementById('removeImgBtn');
+
+  imageFileInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        previewImg.src = ev.target.result;
+        previewBox.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  removeImgBtn.addEventListener('click', function() {
+    imageFileInput.value = '';
+    previewBox.style.display = 'none';
+    previewImg.src = '';
+  });
+
+  document.getElementById('submitForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showLoading(true);
+
+    const title = document.getElementById('title').value.trim();
+    const category = document.getElementById('category').value;
+    const author = document.getElementById('author').value.trim() || 'Anonim';
+    const excerpt = document.getElementById('excerpt').value.trim();
+    const content = document.getElementById('content').value.trim();
+
+    if (!title || !content) {
+      showToast('Judul dan konten wajib diisi', true);
+      showLoading(false);
+      return;
+    }
+
+    let imageUrl = null;
+    const file = document.getElementById('imageFile').files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Ukuran gambar maksimal 5MB', true);
+        showLoading(false);
+        return;
+      }
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (!['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) {
+        showToast('Format gambar tidak didukung (JPG, PNG, WEBP, GIF)', true);
+        showLoading(false);
+        return;
+      }
+      const fileName = `submissions/${Date.now()}_${Math.random().toString(36).substring(2, 10)}.${ext}`;
+      try {
+        const { error: uploadError } = await sb.storage.from('media').upload(fileName, file);
+        if (uploadError) throw uploadError;
+        const { data: urlData } = sb.storage.from('media').getPublicUrl(fileName);
+        imageUrl = urlData.publicUrl;
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal upload gambar: ' + err.message, true);
+        showLoading(false);
+        return;
+      }
+    }
+
+    const newArticle = {
+      title, category, author, excerpt, content, image_url: imageUrl,
+      published: false, rejected: false, created_at: new Date().toISOString()
+    };
+
+    try {
+      const { error: insertError } = await sb.from('articles').insert(newArticle);
+      if (insertError) throw insertError;
+      showToast('✅ Naskah terkirim! Terima kasih, naskah akan dikurasi admin.', false);
+      document.getElementById('submitForm').reset();
+      previewBox.style.display = 'none';
+      previewImg.src = '';
+      imageFileInput.value = '';
+    } catch (err) {
+      console.error(err);
+      showToast('❌ Gagal mengirim: ' + err.message, true);
+    } finally {
+      showLoading(false);
+    }
+  });
+</script>
+</body>
+</html>
