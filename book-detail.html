@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    /* sama seperti style di atas (salin dari books.html) */
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:'Inter',sans-serif; background:#F5F5F0; color:#0A0A0A; line-height:1.6; }
     :root { --navy:#1A1A2E; --gold:#C8A96E; --cream:#F5F5F0; --gray:#6B6B6B; --border:#D4D4CC; --white:#FFFFFF; --red:#B91C1C; }
@@ -69,23 +70,37 @@
   if (!bookId) window.location.href = 'books.html';
   
   async function loadBook() {
-    const { data, error } = await sb.from('books').select('*').eq('id', bookId).single();
-    if (error || !data || !data.published) {
-      document.getElementById('bookDetail').innerHTML = '<div class="empty">Buku tidak ditemukan atau belum dipublikasikan.</div>';
-      return;
+    const container = document.getElementById('bookDetail');
+    try {
+      const { data, error } = await sb.from('books').select('*').eq('id', bookId).single();
+      if (error) throw error;
+      if (!data || !data.published) {
+        container.innerHTML = '<div class="empty">Buku tidak ditemukan atau belum dipublikasikan.</div>';
+        return;
+      }
+      const book = data;
+      container.innerHTML = `
+        <a href="books.html" class="back-link">← Kembali ke Book Store</a>
+        <div class="book-cover-large">
+          ${book.cover_url ? `<img src="${book.cover_url}" alt="${escapeHtml(book.title)}" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23E8E8E0%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%20fill%3D%22%23999%22%3E📖%3C%2Ftext%3E%3C%2Fsvg%3E'">` : '<div style="width:200px;height:260px;background:#E8E8E0;display:flex;align-items:center;justify-content:center;font-size:48px;margin:0 auto;">📖</div>'}
+        </div>
+        <h1 class="book-title">${escapeHtml(book.title)}</h1>
+        <div class="book-author">Oleh ${escapeHtml(book.author)}</div>
+        <div class="book-price">${book.price ? escapeHtml(book.price) : 'Hubungi Admin'}</div>
+        <div class="book-description">${(book.description || '').split('\n').filter(p=>p.trim()).map(p => `<p>${escapeHtml(p)}</p>`).join('')}</div>
+        ${book.purchase_link ? `<a href="${book.purchase_link}" target="_blank" class="btn-buy">Beli Sekarang</a>` : ''}
+      `;
+    } catch (err) {
+      console.error(err);
+      container.innerHTML = '<div class="empty">Terjadi kesalahan saat memuat detail buku.</div>';
     }
-    const book = data;
-    document.getElementById('bookDetail').innerHTML = `
-      <a href="books.html" class="back-link">← Kembali ke Book Store</a>
-      <div class="book-cover-large">${book.cover_url ? `<img src="${book.cover_url}" alt="${escapeHtml(book.title)}">` : '<div style="width:200px;height:260px;background:#E8E8E0;display:flex;align-items:center;justify-content:center;font-size:48px;margin:0 auto;">📖</div>'}</div>
-      <h1 class="book-title">${escapeHtml(book.title)}</h1>
-      <div class="book-author">Oleh ${escapeHtml(book.author)}</div>
-      <div class="book-price">${book.price ? escapeHtml(book.price) : 'Hubungi Admin'}</div>
-      <div class="book-description">${(book.description || '').split('\n').map(p => `<p>${escapeHtml(p)}</p>`).join('')}</div>
-      ${book.purchase_link ? `<a href="${book.purchase_link}" target="_blank" class="btn-buy">Beli Sekarang</a>` : ''}
-    `;
   }
-  function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')); }
+  
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+  }
+  
   loadBook();
 </script>
 </body>
