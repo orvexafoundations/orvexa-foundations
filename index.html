@@ -21,53 +21,14 @@
       box-shadow: inset 0 1px 3px rgba(255,255,255,0.3), 0 2px 5px rgba(0,0,0,0.2);
       border-bottom: 1px solid rgba(255,215,0,0.3);
     }
-    .ticker-glow {
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      animation: shine 4s infinite;
-      pointer-events: none;
-    }
-    @keyframes shine {
-      0% { left: -100%; }
-      20% { left: 100%; }
-      100% { left: 100%; }
-    }
-    .ticker-container {
-      overflow: hidden;
-      white-space: nowrap;
-      padding: 10px 0;
-    }
-    .ticker-track {
-      display: inline-block;
-      animation: scrollEstetik 28s linear infinite;
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
-    }
-    .ticker-item {
-      display: inline-block;
-      color: #FFF9E0;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-      margin: 0 8px;
-    }
-    .ticker-sep {
-      display: inline-block;
-      color: #FFD966;
-      font-size: 14px;
-      margin: 0 4px;
-    }
-    @keyframes scrollEstetik {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    .premium-ticker:hover .ticker-track {
-      animation-play-state: paused;
-    }
+    .ticker-glow { position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); animation:shine 4s infinite; pointer-events:none; }
+    @keyframes shine { 0% { left:-100%; } 20% { left:100%; } 100% { left:100%; } }
+    .ticker-container { overflow:hidden; white-space:nowrap; padding:10px 0; }
+    .ticker-track { display:inline-block; animation:scrollEstetik 28s linear infinite; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; letter-spacing:0.3px; }
+    .ticker-item { display:inline-block; color:#FFF9E0; text-shadow:0 1px 2px rgba(0,0,0,0.3); margin:0 8px; }
+    .ticker-sep { display:inline-block; color:#FFD966; font-size:14px; margin:0 4px; }
+    @keyframes scrollEstetik { 0% { transform:translateX(0); } 100% { transform:translateX(-50%); } }
+    .premium-ticker:hover .ticker-track { animation-play-state:paused; }
     /* ========== HEADER ========== */
     header { background:var(--white); border-bottom:3px solid var(--gold); position:sticky; top:0; z-index:100; }
     .header-top { display:flex; justify-content:space-between; align-items:center; padding:20px 60px; flex-wrap:wrap; gap:15px; }
@@ -87,7 +48,7 @@
     nav ul li a:hover, nav ul li a.active { border-bottom-color:var(--gold); color:var(--gold); }
     /* ========== MAIN ========== */
     .container { max-width:1200px; margin:0 auto; padding:40px 60px; }
-    .hero-grid { display:grid; grid-template-columns:2fr 1fr; gap:2px; background:var(--border); margin-bottom:50px; }
+    .hero-grid { display:grid; grid-template-columns:2fr 1fr; gap:2px; background:var(--border); margin-bottom:50px; border-radius:12px; overflow:hidden; }
     .hero-main { background:var(--white); position:relative; min-height:400px; cursor:pointer; }
     .hero-main img { width:100%; height:100%; object-fit:cover; display:block; }
     .hero-overlay { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top,rgba(10,10,10,0.9),transparent); padding:30px; color:white; }
@@ -98,28 +59,38 @@
     .hero-side-item img { width:100%; height:100%; object-fit:cover; }
     .side-overlay { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top,rgba(0,0,0,0.8),transparent); padding:15px; }
     .side-overlay h3 { font-size:16px; color:white; }
-    /* Trending */
-    .trending-section { margin-bottom:50px; }
-    .trending-list { display:flex; gap:20px; overflow-x:auto; padding:10px 0; }
-    .trending-item { flex:0 0 260px; background:white; border-radius:12px; overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.05); transition:0.2s; }
-    .trending-item:hover { transform:translateY(-3px); }
-    .trending-item img { width:100%; aspect-ratio:16/9; object-fit:cover; }
-    .trending-content { padding:12px; }
-    .trending-cat { font-size:10px; color:var(--red); font-weight:700; text-transform:uppercase; }
-    .trending-title { font-size:14px; font-weight:700; margin-top:5px; }
-    /* Pilihan Redaksi */
-    .section-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:25px; flex-wrap:wrap; gap:15px; }
-    .section-title { font-size:11px; font-weight:700; letter-spacing:3px; color:var(--gold); border-bottom:2px solid var(--gold); display:inline-block; text-transform:uppercase; }
-    .artikel-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:30px; margin-top:20px; }
-    .card { cursor:pointer; border-bottom:1px solid var(--border); padding-bottom:20px; transition:0.2s; }
-    .card:hover { opacity:0.8; }
-    .card img { width:100%; aspect-ratio:16/9; object-fit:cover; margin-bottom:12px; background:#E8E8E0; }
-    .card-cat { font-size:10px; font-weight:700; color:var(--red); text-transform:uppercase; letter-spacing:1px; }
-    .card-title { font-size:18px; font-weight:700; font-family:'Playfair Display',serif; margin:8px 0; }
-    .card-excerpt { font-size:13px; color:var(--gray); line-height:1.5; }
-    .load-more { text-align:center; margin-top:40px; }
-    .load-more-btn { background:var(--navy); color:var(--gold); border:none; padding:12px 30px; border-radius:40px; font-weight:600; cursor:pointer; transition:0.2s; }
+    /* ========== TRENDING (Premium) ========== */
+    .trending-section { margin-bottom:60px; }
+    .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; flex-wrap:wrap; gap:15px; }
+    .section-title { font-size:12px; font-weight:700; letter-spacing:3px; color:var(--gold); border-left:3px solid var(--gold); padding-left:12px; text-transform:uppercase; }
+    .trending-scroll { overflow-x:auto; padding-bottom:8px; scrollbar-width:thin; }
+    .trending-list { display:flex; gap:24px; }
+    .trending-card { flex:0 0 280px; background:white; border-radius:16px; overflow:hidden; cursor:pointer; transition:all 0.3s ease; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+    .trending-card:hover { transform:translateY(-6px); box-shadow:0 16px 28px rgba(0,0,0,0.12); }
+    .trending-img { position:relative; }
+    .trending-img img { width:100%; aspect-ratio:16/9; object-fit:cover; }
+    .trending-badge { position:absolute; top:12px; left:12px; background:#B91C1C; color:white; padding:4px 10px; border-radius:30px; font-size:11px; font-weight:700; display:flex; align-items:center; gap:4px; }
+    .trending-content { padding:16px; }
+    .trending-cat { font-size:10px; font-weight:700; color:var(--red); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+    .trending-title { font-size:16px; font-weight:700; line-height:1.4; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .trending-meta { font-size:11px; color:var(--gray); display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
+    .read-trending { font-size:11px; font-weight:600; color:var(--gold); text-decoration:none; }
+    /* ========== PILIHAN REDAKSI (Card Modern) ========== */
+    .editor-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:30px; margin-top:15px; }
+    .editor-card { background:white; border-radius:16px; overflow:hidden; cursor:pointer; transition:all 0.3s ease; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+    .editor-card:hover { transform:translateY(-4px); box-shadow:0 12px 24px rgba(0,0,0,0.1); }
+    .editor-card img { width:100%; aspect-ratio:16/9; object-fit:cover; transition:transform 0.3s; }
+    .editor-card:hover img { transform:scale(1.02); }
+    .editor-content { padding:18px; }
+    .editor-cat { font-size:10px; font-weight:700; color:var(--red); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+    .editor-title { font-size:18px; font-weight:700; font-family:'Playfair Display',serif; line-height:1.3; margin-bottom:10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .editor-excerpt { font-size:13px; color:var(--gray); line-height:1.5; margin-bottom:12px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    .editor-meta { display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--gray); border-top:1px solid var(--border); padding-top:12px; margin-top:8px; }
+    .read-more { font-weight:600; color:var(--gold); text-decoration:none; font-size:12px; }
+    .load-more { text-align:center; margin-top:50px; }
+    .load-more-btn { background:var(--navy); color:var(--gold); border:none; padding:12px 32px; border-radius:40px; font-weight:600; cursor:pointer; transition:0.2s; font-size:14px; }
     .load-more-btn:hover { background:var(--gold); color:var(--navy); }
+    .counter-text { font-size:12px; color:var(--gray); background:white; padding:4px 12px; border-radius:30px; }
     .loading, .empty { text-align:center; padding:50px; color:var(--gray); }
     /* Footer */
     footer { background:var(--navy); color:var(--cream); padding:40px 60px 20px; margin-top:60px; }
@@ -134,9 +105,9 @@
       nav { padding:0 20px; }
       .container { padding:20px; }
       .hero-grid { grid-template-columns:1fr; }
-      .artikel-grid { grid-template-columns:1fr; }
+      .editor-grid { grid-template-columns:1fr; }
       .footer-grid { grid-template-columns:1fr; }
-      .trending-item { flex:0 0 200px; }
+      .trending-card { flex:0 0 240px; }
       .search-form input { width:120px; }
     }
   </style>
@@ -186,19 +157,22 @@
 <main class="container">
   <div id="heroArea" class="hero-grid"><div class="loading">Memuat berita utama...</div></div>
 
-  <!-- Trending Section -->
+  <!-- TRENDING SECTION PREMIUM -->
   <div class="trending-section">
-    <div class="section-title">🔥 Trending</div>
-    <div id="trendingList" class="trending-list"><div class="loading">Memuat trending...</div></div>
+    <div class="section-header">
+      <div class="section-title">🔥 Trending</div>
+      <span id="trendingCounter" class="counter-text"></span>
+    </div>
+    <div id="trendingList" class="trending-scroll"><div class="loading">Memuat trending...</div></div>
   </div>
 
-  <!-- Pilihan Redaksi dengan Load More -->
+  <!-- PILIHAN REDAKSI MODERN -->
   <div>
     <div class="section-header">
-      <div class="section-title">Pilihan Redaksi</div>
-      <span id="articleCounter" style="font-size:12px; color:var(--gray);"></span>
+      <div class="section-title">✍️ Pilihan Redaksi</div>
+      <span id="editorCounter" class="counter-text"></span>
     </div>
-    <div id="editorGrid" class="artikel-grid"><div class="loading">Memuat artikel...</div></div>
+    <div id="editorGrid" class="editor-grid"><div class="loading">Memuat artikel...</div></div>
     <div id="loadMoreContainer" class="load-more"></div>
   </div>
 </main>
@@ -234,6 +208,11 @@
     return `${x.getDate()} ${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][x.getMonth()]} ${x.getFullYear()}`;
   }
 
+  function openArticle(art) {
+    localStorage.setItem('orvexa_article_detail', JSON.stringify(art));
+    window.location.href = 'detail.html';
+  }
+
   async function loadBeranda() {
     const { data, error } = await sb.from('articles')
       .select('*')
@@ -246,7 +225,7 @@
     }
     allArticles = data;
     
-    // Hero
+    // HERO SECTION (4 artikel pertama)
     const hero = data[0];
     const side = data.slice(1, 4);
     document.getElementById('heroArea').innerHTML = `
@@ -259,55 +238,68 @@
           <div class="side-overlay"><h3>${a.title}</h3></div>
         </div>`).join('')}</div>`;
     
-    // Trending (ambil 5 artikel setelah hero)
+    // TRENDING (artikel 5-9)
     const trendingArticles = data.slice(4, 9);
-    document.getElementById('trendingList').innerHTML = trendingArticles.map(a => `
-      <div class="trending-item" onclick='openArticle(${JSON.stringify(a).replace(/'/g, "&#39;")})'>
+    document.getElementById('trendingCounter').innerText = `${trendingArticles.length} artikel terpopuler`;
+    document.getElementById('trendingList').innerHTML = `
+      <div class="trending-list">
+        ${trendingArticles.map(a => `
+          <div class="trending-card" onclick='openArticle(${JSON.stringify(a).replace(/'/g, "&#39;")})'>
+            <div class="trending-img">
+              ${a.image_url ? `<img src="${a.image_url}" loading="lazy">` : '<div style="background:#ddd; aspect-ratio:16/9; display:flex;align-items:center;justify-content:center">📷</div>'}
+              <div class="trending-badge">🔥 Trending</div>
+            </div>
+            <div class="trending-content">
+              <div class="trending-cat">${a.category}</div>
+              <div class="trending-title">${a.title}</div>
+              <div class="trending-meta">
+                <span>${a.author || 'Redaksi'}</span>
+                <span class="read-trending">Baca →</span>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    
+    // RESET PAGINATION UNTUK EDITOR PICKS
+    currentPage = 1;
+    renderEditorGrid();
+  }
+
+  function renderEditorGrid() {
+    // Artikel untuk grid dimulai dari index ke-9 (setelah hero 4 + trending 5)
+    const gridArticles = allArticles.slice(9);
+    const totalGrid = gridArticles.length;
+    const start = (currentPage - 1) * perPage;
+    const end = start + perPage;
+    const pageArticles = gridArticles.slice(start, end);
+    
+    const gridContainer = document.getElementById('editorGrid');
+    if (!pageArticles.length && currentPage === 1) {
+      gridContainer.innerHTML = '<div class="empty">Belum ada artikel di pilihan redaksi.</div>';
+      document.getElementById('loadMoreContainer').innerHTML = '';
+      document.getElementById('editorCounter').innerText = '';
+      return;
+    }
+    
+    gridContainer.innerHTML = pageArticles.map(a => `
+      <div class="editor-card" onclick='openArticle(${JSON.stringify(a).replace(/'/g, "&#39;")})'>
         ${a.image_url ? `<img src="${a.image_url}" loading="lazy">` : '<div style="background:#ddd; aspect-ratio:16/9; display:flex;align-items:center;justify-content:center">📷</div>'}
-        <div class="trending-content">
-          <div class="trending-cat">${a.category}</div>
-          <div class="trending-title">${a.title}</div>
+        <div class="editor-content">
+          <div class="editor-cat">${a.category}</div>
+          <div class="editor-title">${a.title}</div>
+          <div class="editor-excerpt">${(a.excerpt || a.content || '').substring(0, 100)}…</div>
+          <div class="editor-meta">
+            <span>${a.author || 'Redaksi'} • ${formatDate(a.created_at)}</span>
+            <span class="read-more">Baca selengkapnya →</span>
+          </div>
         </div>
       </div>
     `).join('');
     
-    // Reset pagination untuk grid
-    currentPage = 1;
-    renderGrid();
-  }
-
-  function renderGrid() {
-    const start = (currentPage - 1) * perPage;
-    const end = start + perPage;
-    // Artikel untuk grid adalah semua data setelah 4 artikel pertama (hero + side) atau seluruh data? 
-    // Lebih baik grid menampilkan semua artikel setelah hero & trending? 
-    // Tapi agar konsisten, kita gunakan semua artikel (allArticles) dan kita tidak menampilkan hero/trending di grid.
-    // Kita filter agar tidak menampilkan artikel yang sudah tampil di hero (4 pertama) dan trending (5 berikutnya)?
-    // Tapi biar sederhana: grid menampilkan semua artikel setelah 4 hero.
-    let gridArticles = allArticles.slice(4); // skip 4 hero
-    const totalGrid = gridArticles.length;
-    const pageArticles = gridArticles.slice(start, end);
+    document.getElementById('editorCounter').innerText = `Menampilkan ${Math.min(end, totalGrid)} dari ${totalGrid} artikel`;
     
-    const gridContainer = document.getElementById('editorGrid');
-    if (!pageArticles.length) {
-      gridContainer.innerHTML = '<div class="empty">Tidak ada artikel</div>';
-      document.getElementById('loadMoreContainer').innerHTML = '';
-      document.getElementById('articleCounter').innerText = '';
-      return;
-    }
-    gridContainer.innerHTML = pageArticles.map(a => `
-      <div class="card" onclick='openArticle(${JSON.stringify(a).replace(/'/g, "&#39;")})'>
-        ${a.image_url ? `<img src="${a.image_url}" loading="lazy">` : '<div style="background:#ddd; aspect-ratio:16/9; display:flex;align-items:center;justify-content:center">📷</div>'}
-        <div class="card-cat">${a.category}</div>
-        <div class="card-title">${a.title}</div>
-        <div class="card-excerpt">${(a.excerpt || a.content || '').substring(0, 110)}…</div>
-        <div style="font-size:11px;color:gray">${a.author} • ${formatDate(a.created_at)}</div>
-      </div>
-    `).join('');
-    
-    document.getElementById('articleCounter').innerText = `Menampilkan ${Math.min(end, totalGrid)} dari ${totalGrid} artikel`;
-    
-    // Tombol load more
     if (end < totalGrid) {
       document.getElementById('loadMoreContainer').innerHTML = `<button class="load-more-btn" onclick="loadMore()">Muat Lebih Banyak</button>`;
     } else {
@@ -317,12 +309,7 @@
 
   function loadMore() {
     currentPage++;
-    renderGrid();
-  }
-
-  function openArticle(art) {
-    localStorage.setItem('orvexa_article_detail', JSON.stringify(art));
-    window.location.href = 'detail.html';
+    renderEditorGrid();
   }
 
   loadBeranda();
