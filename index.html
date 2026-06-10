@@ -13,7 +13,62 @@
       --black:#0A0A0A; --navy:#1A1A2E; --gold:#C8A96E; --cream:#F5F5F0;
       --gray:#6B6B6B; --border:#D4D4CC; --white:#FFFFFF; --red:#B91C1C;
     }
-    .top-bar { background:var(--red); color:white; font-size:12px; padding:6px 20px; text-align:center; }
+    /* ========== PREMIUM TICKER (Pilihan 1) ========== */
+    .premium-ticker {
+      position: relative;
+      background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 50%, #8B0000 100%);
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(255,255,255,0.3), 0 2px 5px rgba(0,0,0,0.2);
+      border-bottom: 1px solid rgba(255,215,0,0.3);
+    }
+    .ticker-glow {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      animation: shine 4s infinite;
+      pointer-events: none;
+    }
+    @keyframes shine {
+      0% { left: -100%; }
+      20% { left: 100%; }
+      100% { left: 100%; }
+    }
+    .ticker-container {
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 10px 0;
+    }
+    .ticker-track {
+      display: inline-block;
+      animation: scrollEstetik 28s linear infinite;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    .ticker-item {
+      display: inline-block;
+      color: #FFF9E0;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      margin: 0 8px;
+    }
+    .ticker-sep {
+      display: inline-block;
+      color: #FFD966;
+      font-size: 14px;
+      margin: 0 4px;
+    }
+    @keyframes scrollEstetik {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .premium-ticker:hover .ticker-track {
+      animation-play-state: paused;
+    }
+    /* ========== SISANYA SAMA ========== */
     header { background:var(--white); border-bottom:3px solid var(--gold); }
     .header-top { display:flex; justify-content:space-between; align-items:center; padding:20px 60px; flex-wrap:wrap; gap:15px; }
     .logo h1 { font-family:'Playfair Display',serif; font-size:40px; font-weight:900; color:var(--navy); }
@@ -56,7 +111,35 @@
   </style>
 </head>
 <body>
-<div class="top-bar">🔴 ORVEXA.Press — Media Independen & Terpercaya</div>
+<!-- PREMIUM TICKER (Pilihan 1) -->
+<div class="premium-ticker">
+  <div class="ticker-glow"></div>
+  <div class="ticker-container">
+    <div class="ticker-track">
+      <span class="ticker-item">🔴 ORVEXA.Press</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Media Independen & Terpercaya</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Jurnalisme Berdampak</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">✍️ Kirim Tulisan</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">📧 redaksi@orvexapress.id</span>
+      <!-- duplikasi untuk seamless loop -->
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">🔴 ORVEXA.Press</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Media Independen & Terpercaya</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Jurnalisme Berdampak</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">✍️ Kirim Tulisan</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">📧 redaksi@orvexapress.id</span>
+    </div>
+  </div>
+</div>
+
 <header>
   <div class="header-top">
     <div class="logo"><h1>ORVEXA<span>.</span>Press</h1><p>Jurnalisme Berdampak</p></div>
