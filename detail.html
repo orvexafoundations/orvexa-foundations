@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Meta dinamis akan di-update via JS, fallback -->
+  <meta property="og:title" content="Orvexa Press - Artikel">
+  <meta property="og:description" content="Baca artikel terkini di Orvexa Press">
+  <meta property="og:image" content="https://eflqmksprpcjcxgtsgjt.supabase.co/storage/v1/object/public/media/logo-orvexa.png">
+  <meta property="og:url" content="">
+  <meta name="twitter:card" content="summary_large_image">
   <title>Orvexa Press - Detail Artikel</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -46,8 +52,14 @@
     .article-img { width:100%; max-height:500px; object-fit:cover; margin:20px 0; }
     .article-body { font-size:18px; line-height:1.8; }
     .article-body p { margin-bottom:1.2em; }
-    .share-buttons { display:flex; gap:15px; margin:20px 0; align-items:center; flex-wrap:wrap; }
-    .share-buttons a { background:var(--navy); color:white; padding:6px 14px; border-radius:30px; text-decoration:none; font-size:12px; }
+    .share-section { margin:20px 0; padding:15px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .share-title { font-size:13px; font-weight:600; margin-bottom:10px; color:var(--navy); }
+    .share-buttons { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .share-btn { background:var(--navy); color:white; border:none; padding:8px 16px; border-radius:40px; cursor:pointer; font-weight:600; font-size:13px; display:inline-flex; align-items:center; gap:8px; transition:0.2s; text-decoration:none; }
+    .share-btn:hover { background:var(--gold); color:var(--navy); }
+    .social-link { background:#f0f0f0; color:var(--navy); padding:8px 14px; border-radius:40px; text-decoration:none; font-size:13px; font-weight:500; display:inline-flex; align-items:center; gap:6px; transition:0.2s; }
+    .social-link:hover { background:var(--navy); color:var(--gold); }
+    .toast { position:fixed; bottom:20px; right:20px; background:#1A1A2E; color:white; padding:12px 20px; border-left:4px solid var(--gold); z-index:1000; display:none; border-radius:8px; font-size:14px; }
     .comments-section { margin-top:50px; padding-top:30px; border-top:2px solid var(--border); }
     .comment-form { background:var(--cream); padding:25px; border-radius:12px; margin-bottom:30px; }
     .comment-form h3 { margin-bottom:15px; font-family:'Playfair Display',serif; }
@@ -61,7 +73,6 @@
     .comment-name { font-weight:700; color:var(--navy); }
     .comment-date { font-size:11px; color:var(--gray); margin-left:10px; }
     .comment-content { margin-top:8px; font-size:14px; }
-    .toast { position:fixed; bottom:20px; right:20px; background:#1A1A2E; color:white; padding:12px 20px; border-left:4px solid var(--gold); z-index:1000; display:none; border-radius:8px; }
     .related-articles { margin-top:50px; padding-top:30px; border-top:2px solid var(--border); }
     .related-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:20px; }
     .related-card { cursor:pointer; border-bottom:1px solid var(--border); padding-bottom:12px; }
@@ -69,6 +80,7 @@
     footer { background:var(--navy); color:var(--cream); padding:40px 60px 20px; margin-top:60px; }
     .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr; gap:40px; }
     .footer-brand h3 { font-family:'Playfair Display',serif; font-size:24px; color:var(--gold); }
+    .footer-brand p { font-size:13px; opacity:0.7; margin-top:10px; }
     .footer-col a { display:block; color:var(--cream); text-decoration:none; font-size:13px; margin-bottom:8px; opacity:0.7; }
     .footer-col a:hover { opacity:1; color:var(--gold); }
     .copyright { text-align:center; margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); font-size:12px; opacity:0.5; }
@@ -81,6 +93,7 @@
 <div class="container" id="detailContainer"></div>
 <div id="toast" class="toast"></div>
 <footer><div class="footer-grid"><div class="footer-brand"><h3>ORVEXA.Press</h3><p>Bagian dari Orvexa Foundations — menghadirkan jurnalisme independen yang mengedepankan fakta, analisis mendalam, dan keberagaman perspektif untuk masyarakat yang lebih cerdas.</p></div><div class="footer-col"><h4>Eksplorasi</h4><a href="ekonomi.html">Ekonomi</a><a href="politik.html">Politik</a><a href="hukum.html">Hukum</a><a href="internasional.html">Internasional</a><a href="olahraga.html">Olahraga</a><a href="sejarah.html">Sejarah</a><a href="artikel.html">Artikel</a><a href="essai.html">Essai</a><a href="opini.html">Opini</a><a href="books.html">📚 Book Store</a></div><div class="footer-col"><h4>Lainnya</h4><a href="kirim.html">Kirim Tulisan</a><a href="privacy.html">Kebijakan Privasi</a><a href="profil.html">Profil Kami</a><a href="admin.html">Admin Panel</a></div></div><div class="copyright">© 2025 Orvexa Press - Media Independen dari Orvexa Foundations. Hak cipta dilindungi.</div></footer>
+
 <script>
   const SUPABASE_URL = 'https://eflqmksprpcjcxgtsgjt.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmbHFta3NwcnBjamN4Z3RzZ2p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMTc1OTAsImV4cCI6MjA5NjU5MzU5MH0.TCqOzZPknF8KsTahB6rfph8_J2cZAGUNi3AHeLX2xFw';
@@ -89,6 +102,23 @@
   let article = null;
   try { article = JSON.parse(localStorage.getItem('orvexa_article_detail')); } catch(e) { console.error(e); }
   if (!article) { window.location.href = 'index.html'; }
+
+  // Update meta tags dinamis untuk share preview
+  function updateMetaTags() {
+    let ogTitle = document.querySelector('meta[property="og:title"]');
+    let ogDesc = document.querySelector('meta[property="og:description"]');
+    let ogImage = document.querySelector('meta[property="og:image"]');
+    let ogUrl = document.querySelector('meta[property="og:url"]');
+    if (!ogTitle) { ogTitle = document.createElement('meta'); ogTitle.setAttribute('property', 'og:title'); document.head.appendChild(ogTitle); }
+    if (!ogDesc) { ogDesc = document.createElement('meta'); ogDesc.setAttribute('property', 'og:description'); document.head.appendChild(ogDesc); }
+    if (!ogImage) { ogImage = document.createElement('meta'); ogImage.setAttribute('property', 'og:image'); document.head.appendChild(ogImage); }
+    if (!ogUrl) { ogUrl = document.createElement('meta'); ogUrl.setAttribute('property', 'og:url'); document.head.appendChild(ogUrl); }
+    ogTitle.setAttribute('content', article.title + ' | Orvexa Press');
+    ogDesc.setAttribute('content', (article.excerpt || article.content || '').substring(0, 160));
+    ogImage.setAttribute('content', article.image_url || 'https://eflqmksprpcjcxgtsgjt.supabase.co/storage/v1/object/public/media/logo-orvexa.png');
+    ogUrl.setAttribute('content', window.location.href);
+    document.title = article.title + ' | Orvexa Press';
+  }
 
   async function incrementViews() {
     const currentViews = article.views || 0;
@@ -116,7 +146,33 @@
     setTimeout(() => { toast.style.display = 'none'; }, 4000);
   }
 
+  // Fungsi share universal (native share atau copy link)
+  async function shareArticleUniversal() {
+    const shareData = {
+      title: article.title,
+      text: (article.excerpt || article.content || '').substring(0, 100) + '…',
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        showToast('Terima kasih telah membagikan artikel!');
+      } catch (err) {
+        if (err.name !== 'AbortError') showToast('Gagal membagikan artikel', true);
+      }
+    } else {
+      // Copy link ke clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        showToast('🔗 Link artikel disalin ke clipboard!');
+      } catch (err) {
+        showToast('Gagal menyalin link', true);
+      }
+    }
+  }
+
   async function renderPage() {
+    updateMetaTags();
     await incrementViews();
     const comments = await loadComments();
     const categoryLink = `${article.category.toLowerCase()}.html`;
@@ -127,9 +183,21 @@
       <div class="breadcrumb"><a href="index.html">Beranda</a> &gt; <a href="${categoryLink}">${article.category}</a> &gt; <span>${escapeHtml(article.title)}</span></div>
       <h1 class="article-title">${escapeHtml(article.title)}</h1>
       <div class="article-meta"><span>Oleh <a href="${authorLink}" style="color:var(--gold); text-decoration:none;">${escapeHtml(article.author || 'Redaksi')}</a> • ${new Date(article.created_at).toLocaleDateString('id-ID')}</span><span>👁️ ${article.views || 0} kali dibaca</span></div>
-      <div class="share-buttons"><span>Bagikan:</span><a href="https://www.facebook.com/sharer/sharer.php?u=${shareUrl}" target="_blank">Facebook</a><a href="https://twitter.com/intent/tweet?text=${shareTitle}&url=${shareUrl}" target="_blank">Twitter</a><a href="https://wa.me/?text=${shareTitle}%20${shareUrl}" target="_blank">WhatsApp</a></div>
+      
+      <!-- SHARE SECTION -->
+      <div class="share-section">
+        <div class="share-title">📤 Bagikan artikel ini</div>
+        <div class="share-buttons">
+          <button id="shareUniversalBtn" class="share-btn">🔗 Bagikan (Copy Link)</button>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=${shareUrl}" target="_blank" class="social-link">📘 Facebook</a>
+          <a href="https://twitter.com/intent/tweet?text=${shareTitle}&url=${shareUrl}" target="_blank" class="social-link">🐦 Twitter</a>
+          <a href="https://wa.me/?text=${shareTitle}%20${shareUrl}" target="_blank" class="social-link">📱 WhatsApp</a>
+        </div>
+      </div>
+      
       ${article.image_url ? `<img class="article-img" src="${article.image_url}" alt="${article.title}">` : ''}
       <div class="article-body">${(article.content || '').split('\n').filter(p => p.trim()).map(p => `<p>${escapeHtml(p)}</p>`).join('')}</div>
+      
       <div class="comments-section"><h3>💬 Komentar</h3>
         <div class="comment-form"><h3>Tinggalkan Komentar</h3><form id="commentForm"><div class="form-group"><label>Nama *</label><input type="text" id="commentName" required></div><div class="form-group"><label>Email (opsional)</label><input type="email" id="commentEmail"></div><div class="form-group"><label>Komentar *</label><textarea id="commentContent" rows="4" required></textarea></div><button type="submit" class="btn-submit-comment">Kirim Komentar</button></form><p style="font-size:12px; color:gray; margin-top:10px;">Komentar akan ditampilkan setelah disetujui admin.</p></div>
         <div class="comment-list" id="commentList"><div class="loading">Memuat komentar...</div></div>
@@ -137,6 +205,15 @@
       <div class="related-articles"><h3>Artikel Terkait</h3><div id="relatedGrid" class="related-grid"><div class="loading">Memuat...</div></div></div>
     `;
     document.getElementById('detailContainer').innerHTML = detailHtml;
+    
+    // Tombol share universal
+    const shareBtn = document.getElementById('shareUniversalBtn');
+    if (shareBtn) {
+      // Ubah teks tombol berdasarkan kemampuan device
+      if (navigator.share) shareBtn.innerHTML = '📱 Bagikan (Share)';
+      else shareBtn.innerHTML = '🔗 Salin Link';
+      shareBtn.addEventListener('click', shareArticleUniversal);
+    }
     
     const commentListDiv = document.getElementById('commentList');
     if (comments.length === 0) { commentListDiv.innerHTML = '<div class="empty">Belum ada komentar. Jadilah yang pertama!</div>'; }
