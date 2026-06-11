@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- BEGIN SHAREAHOLIC CODE -->
+  <link rel="preload" href="https://cdn.shareaholic.net/assets/pub/shareaholic.js" as="script" />
+  <meta name="shareaholic:site_id" content="5e57bbbd6bc439c63ce4f09a2e59d097" />
+  <script data-cfasync="false" async src="https://cdn.shareaholic.net/assets/pub/shareaholic.js"></script>
+  <!-- END SHAREAHOLIC CODE -->
+  
   <!-- Meta dinamis akan di-update via JS, fallback -->
   <meta property="og:title" content="Orvexa Press - Artikel">
   <meta property="og:description" content="Baca artikel terkini di Orvexa Press">
@@ -52,6 +59,9 @@
     .article-img { width:100%; max-height:500px; object-fit:cover; margin:20px 0; }
     .article-body { font-size:18px; line-height:1.8; }
     .article-body p { margin-bottom:1.2em; }
+    /* Shareaholic akan menampilkan tombol sendiri, kita bisa tambahkan div */
+    .shareaholic-canvas { margin: 20px 0; }
+    /* Opsional: sembunyikan tombol share manual jika ingin menggunakan Shareaholic saja */
     .share-section { margin:20px 0; padding:15px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
     .share-title { font-size:13px; font-weight:600; margin-bottom:10px; color:var(--navy); }
     .share-buttons { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
@@ -103,7 +113,7 @@
   try { article = JSON.parse(localStorage.getItem('orvexa_article_detail')); } catch(e) { console.error(e); }
   if (!article) { window.location.href = 'index.html'; }
 
-  // Update meta tags dinamis untuk share preview
+  // Update meta tags dinamis untuk share preview (Shareaholic juga akan membaca ini)
   function updateMetaTags() {
     let ogTitle = document.querySelector('meta[property="og:title"]');
     let ogDesc = document.querySelector('meta[property="og:description"]');
@@ -146,7 +156,7 @@
     setTimeout(() => { toast.style.display = 'none'; }, 4000);
   }
 
-  // Fungsi share universal (native share atau copy link)
+  // Fungsi share universal (native share atau copy link) - opsional, bisa dinonaktifkan jika hanya ingin Shareaholic
   async function shareArticleUniversal() {
     const shareData = {
       title: article.title,
@@ -161,7 +171,6 @@
         if (err.name !== 'AbortError') showToast('Gagal membagikan artikel', true);
       }
     } else {
-      // Copy link ke clipboard
       try {
         await navigator.clipboard.writeText(window.location.href);
         showToast('🔗 Link artikel disalin ke clipboard!');
@@ -184,9 +193,12 @@
       <h1 class="article-title">${escapeHtml(article.title)}</h1>
       <div class="article-meta"><span>Oleh <a href="${authorLink}" style="color:var(--gold); text-decoration:none;">${escapeHtml(article.author || 'Redaksi')}</a> • ${new Date(article.created_at).toLocaleDateString('id-ID')}</span><span>👁️ ${article.views || 0} kali dibaca</span></div>
       
-      <!-- SHARE SECTION -->
+      <!-- Shareaholic Share Buttons (akan muncul otomatis di sini jika menggunakan canvas) -->
+      <div class="shareaholic-canvas" data-app="share_buttons" data-app-id="32768766"></div>
+      
+      <!-- Opsional: tetap tampilkan tombol share manual jika diinginkan (bisa dihapus) -->
       <div class="share-section">
-        <div class="share-title">📤 Bagikan artikel ini</div>
+        <div class="share-title">📤 Bagikan artikel ini (manual)</div>
         <div class="share-buttons">
           <button id="shareUniversalBtn" class="share-btn">🔗 Bagikan (Copy Link)</button>
           <a href="https://www.facebook.com/sharer/sharer.php?u=${shareUrl}" target="_blank" class="social-link">📘 Facebook</a>
@@ -206,10 +218,9 @@
     `;
     document.getElementById('detailContainer').innerHTML = detailHtml;
     
-    // Tombol share universal
+    // Tombol share universal manual (opsional)
     const shareBtn = document.getElementById('shareUniversalBtn');
     if (shareBtn) {
-      // Ubah teks tombol berdasarkan kemampuan device
       if (navigator.share) shareBtn.innerHTML = '📱 Bagikan (Share)';
       else shareBtn.innerHTML = '🔗 Salin Link';
       shareBtn.addEventListener('click', shareArticleUniversal);
